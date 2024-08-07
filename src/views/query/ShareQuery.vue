@@ -13,7 +13,7 @@ export default {
         };
     },
     created() {
-        
+        console.log("query/ShareQuery");
     },
     methods: {
     },

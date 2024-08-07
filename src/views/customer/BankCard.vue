@@ -13,7 +13,7 @@ export default {
         };
     },
     created() {
-        
+        console.log("customer/BankCard");
     },
     methods: {
     },

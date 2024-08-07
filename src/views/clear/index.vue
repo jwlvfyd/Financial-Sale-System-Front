@@ -1,6 +1,6 @@
 <template>
     <div>
-        clear/index (清算)
+        clear/index
     </div>
 </template>
 
@@ -13,7 +13,7 @@ export default {
         };
     },
     created() {
-        
+        console.log("clear/index");
     },
     methods: {
     },

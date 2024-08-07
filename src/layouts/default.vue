@@ -17,7 +17,7 @@
           </h-menu-item>
           <h-submenu name="product">
             <template v-slot:title>
-              <h-icon name="mail"></h-icon>
+              <h-icon name="social-buffer"></h-icon>
               产品管理
             </template>
             <h-menu-item name="product-1">
@@ -29,7 +29,7 @@
           </h-submenu>
           <h-submenu name="customer">
             <template v-slot:title>
-              <h-icon name="mail"></h-icon>
+              <h-icon name="person-stalker"></h-icon>
               客户管理
             </template>
             <h-menu-item name="customer-1">
@@ -47,7 +47,7 @@
           </h-submenu>
           <h-submenu name="trade">
             <template v-slot:title>
-              <h-icon name="mail"></h-icon>
+              <h-icon name="social-usd"></h-icon>
               交易管理
             </template>
             <h-menu-item name="trade-1">
@@ -62,7 +62,7 @@
           </h-submenu>
           <h-submenu name="clear">
             <template v-slot:title>
-              <h-icon name="mail"></h-icon>
+              <h-icon name="clock_fill"></h-icon>
               日结清算
             </template>
             <h-menu-item name="clear-1">
@@ -71,7 +71,7 @@
           </h-submenu>
           <h-submenu name="query">
             <template v-slot:title>
-              <h-icon name="mail"></h-icon>
+              <h-icon name="stealth_fill"></h-icon>
               业务查询
             </template>
             <h-menu-item name="query-1">
