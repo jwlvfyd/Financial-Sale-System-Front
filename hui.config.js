@@ -19,10 +19,16 @@ module.exports = {
   proxy: {"/testapi": {
             target: "http://127.0.0.1:2022",
             changeOrigin: true,
+            pathRewrite: {
+                "^/testapi": "/api"
+            }
         },
         "/api": {
             target: "http://127.0.0.1:9091",
             changeOrigin: true,
+            pathRewrite: {
+              "^/api": ""
+          }
         },
       },
   // 设置静态资源文件打包时的相对路径
