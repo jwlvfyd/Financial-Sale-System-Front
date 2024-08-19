@@ -73,7 +73,7 @@ var columns = [
   },
   {
     title: "交易时间",
-    key: "tradeTime",
+    key: "timestamp",
   },
   {
     title: "客户姓名",
