@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="header">
+    <!-- <div class="header">
       <p class="item active" @click="jump('/home')">/home</p>
-    </div>
+    </div> -->
     <router-view></router-view>
   </div>
 </template>

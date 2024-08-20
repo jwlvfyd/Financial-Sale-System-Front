@@ -8,12 +8,25 @@
 -->
 <template>
   <div class="layout">
+    <h-row name="flex" style="background-color: #43a7fd;height: 40px;">
+      <h-col span="20">
+        <h2 style="margin-left: 3%; margin-top: 5px;color:aliceblue">
+          理财销售交易系统
+        </h2>
+      </h-col>
+      <h-col span="4">
+        <div style="margin-left: 50%; margin-top: 3px;">
+          <h-button type="primary">登录</h-button>
+        </div>
+      </h-col>
+    </h-row>
+
     <h-row name="flex">
-      <h-col span="5" class="layout-menu-left">
+      <h-col span="4" class="layout-menu-left">
         <h-menu active-name="1-2" theme="dark" width="auto" :open-names="['1']">
           <div class="layout-logo-left"></div>
           <h-menu-item name="home">
-            <router-link to="/">首页</router-link>
+            <router-link to="/home">首页</router-link>
           </h-menu-item>
           <h-submenu name="product">
             <template v-slot:title>
@@ -92,14 +105,20 @@
             <router-view />
           </div>
         </div>
-        <div class="layout-footer layout-copy">&copy;2022 HUNDSUN 版权所有</div>
       </h-col>
     </h-row>
   </div>
 </template>
 
 <script>
-export default {};
+import logo from "@/assets/logo.png";
+export default {
+  data() {
+    return {
+      logo
+    };
+  }
+};
 </script>
 
 <style lang="less">

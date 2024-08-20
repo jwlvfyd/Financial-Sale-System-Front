@@ -1,7 +1,7 @@
 <template>
   <div class="tc">
-    <h1>HUI Design</h1>
-    <p>前端整体解决方案</p>
+    <h1>理财销售交易系统</h1>
+    <p>Group1</p>
     <h2>相关资源</h2>
     <ul>
       <li>
