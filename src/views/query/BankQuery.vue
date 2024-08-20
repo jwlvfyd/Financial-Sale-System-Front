@@ -47,29 +47,7 @@
 
 <script>
 import core from "@hsui/core";
-var data = []
-var columns = [
-  {
-    title: "银行卡号",
-    key: "accountId",
-  },
-  {
-    title: "银行名称",
-    key: "bankName",
-  },
-  {
-    title: "支出/入账",
-    key: "tradeType",
-  },
-  {
-    title: "变化金额",
-    key: "amount",
-  },
-  {
-    title: "变化时间",
-    key: "changeTime",
-  },
-]
+
 export default {
     data() {
         return {
@@ -77,9 +55,31 @@ export default {
             accountId: "",
             dates: ["", ""],
           },
-          tData: data.slice(0, 10),
-          columns: columns,
-          totalNum: data.length,
+            data : [],
+            columns : [
+                {
+                    title: "银行卡号",
+                    key: "accountId",
+                },
+                {
+                    title: "银行名称",
+                    key: "bankName",
+                },
+                {
+                    title: "支出/入账",
+                    key: "tradeType",
+                },
+                {
+                    title: "变化金额",
+                    key: "amount",
+                },
+                {
+                    title: "变化时间",
+                    key: "changeTime",
+                },
+            ],
+            tData: [],
+            totalNum: 0,
         };
     },
     created() {
@@ -89,37 +89,31 @@ export default {
         handleSubmit(){
             console.log('表单数据：',this.formItem);
             if(this.isFormItemEmpty()){
-                this.info();
+                this.$hMessage.info("请至少输入一项！");
                 return 0;
             }
             const startDateStr = this.formatDateToYYYYMMDDHHmmss(this.formItem.dates[0]);
             const endDateStr = this.formatDateToYYYYMMDDHHmmss(this.formItem.dates[1]);
             //提交到api接口
             core.fetch({
-            method: 'post',
-            url: "/api/tquery/card",
+            method: 'get',
+            url: `/api/tquery/account?accountId=${this.formItem.accountId}`,
+            //&startTime=${parseInt(startDateStr)}&endTime=${parseInt(endDateStr)}
             headers: {
             'Content-Type': 'application/json' // 确保服务器知道发送的是JSON数据
-            },
-            data: {
-            accountId:this.formItem.accountId,
-            startTime:parseInt(startDateStr),
-            endTime: parseInt(endDateStr),
-            }
+            },  
         })
         .then(result => {
             // 处理响应数据
-            console.log('提交成功:', result );
-            alert(result.msg);
-                this.data=result.data;
+            this.$hMessage.info(result.msg);
+            this.data=result.data;
+            this.totalNum=this.data.length;
+            this.tData= this.data.slice(0, 10);
             })
-            .catch(error => {
+        .catch(error => {
             // 处理错误
             console.error('提交失败:', error);
         });
-        },
-        info() {
-            this.$hMessage.info("请至少输入一项！");
         },
         formatDateToYYYYMMDDHHmmss(date) {
             if(date==null)return '';
@@ -140,7 +134,6 @@ export default {
         if (this.formItem.accountId !== "") {
             return false;
         }
-
         // 检查 dates 数组中的每个元素是否为空
         if (!this.formItem.dates.every(date => date === "")) {
             return false;

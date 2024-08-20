@@ -30,14 +30,11 @@
                   <h-button type="primary" @click="handleSubmit">查询</h-button>
                   <h-button type="ghost" @click="cancel" style="margin-left: 8px;">取消</h-button>
                 </h-form-item>
-              </h-col>
-              
+              </h-col> 
             </h-row>
-          </h-form-item>
-          
+          </h-form-item>  
         </h-form>
       </div>
-      
       <div>
         <h-table 
         :data="tData" 
@@ -57,49 +54,7 @@
 
 <script>
 import core from "@hsui/core";
-var data = []
-var columns = [
-  {
-    title: "交易流水编号",
-    key: "swifNo",
-  },
-  {
-    title: "交易类型",
-    key: "tradeType",
-  },
-  {
-    title: "金额/份额",
-    key: "amount",
-  },
-  {
-    title: "交易时间",
-    key: "timestamp",
-  },
-  {
-    title: "客户姓名",
-    key: "customerName",
-  },
-  {
-    title: "客户id",
-    key: "customerId",
-  },
-  {
-    title: "银行名称",
-    key: "accountName",
-  },
-  {
-    title: "银行卡号",
-    key: "accountId",
-  },
-  {
-    title: "基金名称",
-    key: "productName",
-  },
-  {
-    title: "基金代码",
-    key: "productId",
-  },
-];
+
 export default {
     data() {
         return {
@@ -108,9 +63,51 @@ export default {
             customerName:"",
             dates: ["", ""],
           },
-          tData: data.slice(0, 10),
-          columns: columns,
-          totalNum: data.length,
+          data : [],
+          columns : [
+            {
+              title: "交易流水编号",
+              key: "swiftNo",
+            },
+            {
+              title: "交易类型",
+              key: "tradeType",
+            },
+            {
+              title: "金额/份额",
+              key: "amount",
+            },
+            {
+              title: "交易时间",
+              key: "timestamp",
+            },
+            {
+              title: "客户姓名",
+              key: "customerName",
+            },
+            {
+              title: "客户id",
+              key: "customerId",
+            },
+            {
+              title: "银行名称",
+              key: "accountName",
+            },
+            {
+              title: "银行卡号",
+              key: "accountId",
+            },
+            {
+              title: "基金名称",
+              key: "productName",
+            },
+            {
+              title: "基金代码",
+              key: "productId",
+            },
+          ],
+          tData: [],
+          totalNum: 0,
      };
     },
     created() {
@@ -121,39 +118,31 @@ export default {
     methods: { 
       handleSubmit(){
         if(this.isFormItemEmpty()){
-                this.info();
-                return 0;
-            }
+            this.$hMessage.info("请至少输入一项！");
+            return 0;
+        }
         const startDateStr = this.formatDateToYYYYMMDDHHmmss(this.formItem.dates[0]);
         const endDateStr = this.formatDateToYYYYMMDDHHmmss(this.formItem.dates[1]);
         console.log('表单数据：',this.formItem);
         //提交到api接口
         core.fetch({
-          method: 'post',
-          url: "/api/tquery/trade",
+          method: 'get',
+          url: `/api/tquery/trade?swiftNo=${this.formItem.swifNo}&customerName=${this.formItem.customerName}&startTime=${parseInt(startDateStr)}&endTime=${parseInt(endDateStr)}`,
           headers: {
             'Content-Type': 'application/json' // 确保服务器知道发送的是JSON数据
           },
-          data: {
-            swifNo:this.formItem.swifNo,
-            customerName:this.formItem.customerName,
-            startTime:parseInt(startDateStr),
-            endTime: parseInt(endDateStr),
-          }
         })
         .then(result => {
           // 处理响应数据
-          console.log('提交成功:', result );
-          alert(result.msg);
-          this.data=result.data;
+          this.$hMessage.info(result.msg);
+            this.data=result.data;
+            this.totalNum=this.data.length;
+            this.tData= this.data.slice(0, 10);
         })
         .catch(error => {
           // 处理错误
           console.error('提交失败:', error);
       });
-      },
-      info() {
-        this.$hMessage.info("请至少输入一项！");
       },
       cancel(){
         this.formItem.swifNo = "";

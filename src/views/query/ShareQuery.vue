@@ -44,33 +44,7 @@
 <script>
 import core from "@hsui/core";
 
-var data = []
-var columns = [
-  {
-    title: "基金名称",
-    key: "productName",
-  },
-  {
-    title: "基金代码",
-    key: "productId",
-  },
-  {
-    title: "客户姓名",
-    key: "customer_name",
-  },
-  {
-    title: "对应银行账户",
-    key: "accountId",
-  },
-  {
-    title: "银行名称",
-    key: "accountName",
-  },
-  {
-    title: "持有份额",
-    key: "share",
-  },
-]
+
 export default {
     data() {
         return {
@@ -78,11 +52,36 @@ export default {
                 productName: "",
                 customerName:"",
             },
-            tData: data.slice(0, 10),
-            columns: columns,
-            totalNum: data.length,
-            };
-        
+            data : [],
+            columns : [
+              {
+                title: "基金名称",
+                key: "productName",
+              },
+              {
+                title: "基金代码",
+                key: "productId",
+              },
+              {
+                title: "客户姓名",
+                key: "customerName",
+              },
+              {
+                title: "对应银行账户",
+                key: "accountId",
+              },
+              {
+                title: "银行名称",
+                key: "accountName",
+              },
+              {
+                title: "持有份额",
+                key: "share",
+              },
+            ],
+            tData: [],
+            totalNum: 0,
+       };
     },
     created() {
         console.log("query/ShareQuery");
@@ -90,35 +89,29 @@ export default {
     methods: {
         handleSubmit(){
           if(this.isFormEmpty()){
-                this.info();
+                this.$hMessage.info("请至少输入一项！");
                 return 0;
             }
         console.log('表单数据：',this.formItem);
         //提交到api接口
         core.fetch({
-          method: 'post',
-          url: "/api/tquery/fundshares",
+          method: 'get',
+        url: `/api/tquery/fundshare?productName=${this.formItem.productName}&customerName=${this.formItem.customerName}`,
           headers: {
             'Content-Type': 'application/json' // 确保服务器知道发送的是JSON数据
           },
-          data: {
-            productName:this.formItem.productName,
-            customerName:this.formItem.customerName,
-          }
         })
         .then(result => {
           // 处理响应数据
-          console.log('提交成功:', result );
-          alert(result.msg);
+          this.$hMessage.info(result.msg);
           this.data=result.data;
+          this.totalNum=this.data.length;
+          this.tData= this.data.slice(0, 10);
         })
         .catch(error => {
           // 处理错误
           console.error('提交失败:', error);
       });
-      },
-      info() {
-        this.$hMessage.info("请至少输入一项！");
       },
       cancel(){
         this.formItem.productName = "";
