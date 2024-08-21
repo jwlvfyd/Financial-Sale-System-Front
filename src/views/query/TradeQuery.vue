@@ -5,7 +5,7 @@
           <h-row>
             <h-col span="7">
               <h-form-item label="流水编号">
-                <h-input v-model="formItem.swifNo" placeholder="请输入" ></h-input>
+                <h-input v-model="formItem.swiftNo" placeholder="请输入" ></h-input>
               </h-form-item>
             </h-col>
             <h-col span="7">
@@ -14,9 +14,9 @@
               </h-form-item>
             </h-col>
           </h-row>
-          <h-form-item label="起止日期">
-            <h-row>
-              <h-col span="6">
+          <h-row>
+            <h-col span="7">
+              <h-form-item label="起止日期">
                 <h-date-picker
                 v-model="formItem.dates"
                 format="yyyy-MM-dd"
@@ -24,19 +24,25 @@
                 placement="bottom-end"
                 placeholder="选择日期"
               ></h-date-picker>               
-              </h-col>
-              <h-col span="4" style="margin-left: 100px;">
-                <h-form-item>
-                  <h-button type="primary" @click="handleSubmit">查询</h-button>
-                  <h-button type="ghost" @click="cancel" style="margin-left: 8px;">取消</h-button>
-                </h-form-item>
-              </h-col> 
-            </h-row>
-          </h-form-item>  
+             </h-form-item>
+            </h-col>
+            <h-col span="7">
+              <h-form-item label="客户ID">
+                <h-input v-model="formItem.customerId" placeholder="请输入" ></h-input>
+              </h-form-item>
+            </h-col> 
+            <h-col span="6">
+              <h-form-item>
+                <h-button type="primary" @click="handleSubmit">查询</h-button>
+                <h-button type="ghost" @click="cancel" style="margin-left: 8px;">取消</h-button>
+              </h-form-item> 
+            </h-col>     
+          </h-row>
         </h-form>
       </div>
       <div>
-        <h-table 
+        <h-table
+        border 
         :data="tData" 
         :columns="columns" 
         style="margin-bottom: 8px;"
@@ -59,8 +65,9 @@ export default {
     data() {
         return {
           formItem: {
-            swifNo: "",
+            swiftNo: "",
             customerName:"",
+            customerId:"",
             dates: ["", ""],
           },
           data : [],
@@ -68,18 +75,47 @@ export default {
             {
               title: "交易流水编号",
               key: "swiftNo",
+              width:150,
             },
             {
               title: "交易类型",
               key: "tradeType",
+              filters: [
+                {
+                  label: "申购",
+                  value: 1,
+                },
+                {
+                  label: "赎回",
+                  value: 2,
+                },
+                {
+                  label: "撤回",
+                  value: 3,
+                }
+              ],
+              filterMultiple: false,
+              filterMethod(value, row) {
+                if (value === 1) {
+                  return row.tradeType === "申购";
+                } else if (value === 2) {
+                  return row.tradeType === "赎回";
+                }
+                else{
+                  return row.tradeType === "撤回";
+                }
+              },
             },
             {
               title: "金额/份额",
               key: "amount",
+              sortable: true,
             },
             {
               title: "交易时间",
               key: "timestamp",
+              width:150,
+              sortable: true,
             },
             {
               title: "客户姓名",
@@ -124,10 +160,12 @@ export default {
         const startDateStr = this.formatDateToYYYYMMDDHHmmss(this.formItem.dates[0]);
         const endDateStr = this.formatDateToYYYYMMDDHHmmss(this.formItem.dates[1]);
         console.log('表单数据：',this.formItem);
+        let endDate = endDateStr ? parseInt(endDateStr) : ''; 
+        let startDate = startDateStr ? parseInt(startDateStr) : ''; 
         //提交到api接口
         core.fetch({
           method: 'get',
-          url: `/api/tquery/trade?swiftNo=${this.formItem.swifNo}&customerName=${this.formItem.customerName}&startTime=${parseInt(startDateStr)}&endTime=${parseInt(endDateStr)}`,
+          url: `/api/tquery/trade?swiftNo=${this.formItem.swiftNo}&customerName=${this.formItem.customerName}&customerId=${this.formItem.customerId}&startTime=${startDate}&endTime=${endDate}`,
           headers: {
             'Content-Type': 'application/json' // 确保服务器知道发送的是JSON数据
           },
@@ -136,8 +174,16 @@ export default {
           // 处理响应数据
           this.$hMessage.info(result.msg);
             this.data=result.data;
-            this.totalNum=this.data.length;
-            this.tData= this.data.slice(0, 10);
+            this.$nextTick(() => {
+              // 遍历data中的每个数组元素
+              this.data.forEach(item => {
+                // 假设item有一个名为timestamp的属性
+                item.timestamp = this.convertIntegerToDateTime(item.timestamp);
+              });
+
+              this.totalNum = this.data.length;
+              this.tData = this.data.slice(0, 10);
+            });
         })
         .catch(error => {
           // 处理错误
@@ -184,6 +230,26 @@ export default {
         const seconds = date.getSeconds().toString().padStart(2, '0');
         return `${year}${month}${day}${hours}${minutes}${seconds}`;
       },
+      convertIntegerToDateTime(integer) {
+        // 将整数转换为字符串
+        const integerStr = integer.toString();
+
+        // 检查字符串长度是否符合预期
+        if (integerStr.length !== 14) {
+          throw new Error('输入的整数长度必须为14位');
+        }
+
+        // 提取年、月、日、时、分、秒
+        const year = integerStr.substring(0, 4);
+        const month = integerStr.substring(4, 6);
+        const day = integerStr.substring(6, 8);
+        const hour = integerStr.substring(8, 10);
+        const minute = integerStr.substring(10, 12);
+        const second = integerStr.substring(12, 14);
+
+        // 构建并返回日期时间字符串
+        return `${year}.${month}.${day} ${hour}:${minute}:${second}`;
+      }
     },
   };
 </script>

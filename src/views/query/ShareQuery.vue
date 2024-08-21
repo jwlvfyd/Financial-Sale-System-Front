@@ -9,12 +9,17 @@
                         </h-form-item>
                     </h-col>
                     <h-col span="7">
-                        <h-form-item  label="产品名称">
+                        <h-form-item  label="基金名称">
                             <h-input v-model="formItem.productName" placeholder="请输入"></h-input>
                         </h-form-item>                      
                     </h-col>
                 </h-row>
                 <h-row>
+                  <h-col span="7">
+                    <h-form-item label="客户ID">
+                      <h-input v-model="formItem.customerId" placeholder="请输入" ></h-input>
+                    </h-form-item>
+                  </h-col> 
                     <h-col span="8" >
                         <h-form-item>
                         <h-button type="primary" @click="handleSubmit">查询</h-button>
@@ -25,18 +30,19 @@
             </h-form>
         </div>
         <div>
-        <h-table 
-        :data="tData" 
-        :columns="columns" 
-        style="margin-bottom: 8px;"
-        ></h-table>
-        <h-page
-        :total="totalNum"
-        @on-change="dataChange"
-        show-elevator
-        show-total
-        :page-size="10"
-        ></h-page>
+          <h-table 
+          border 
+          :data="tData" 
+          :columns="columns" 
+          style="margin-bottom: 8px;"
+          ></h-table>
+          <h-page
+          :total="totalNum"
+          @on-change="dataChange"
+          show-elevator
+          show-total
+          :page-size="10"
+          ></h-page>
       </div>
     </div>
 </template>
@@ -51,7 +57,8 @@ export default {
             formItem: {
                 productName: "",
                 customerName:"",
-            },
+                customerId:"",
+              },
             data : [],
             columns : [
               {
@@ -61,6 +68,11 @@ export default {
               {
                 title: "基金代码",
                 key: "productId",
+              },
+              {
+                title: "持有份额",
+                key: "share",
+                sortable: true,
               },
               {
                 title: "客户姓名",
@@ -74,10 +86,6 @@ export default {
                 title: "银行名称",
                 key: "accountName",
               },
-              {
-                title: "持有份额",
-                key: "share",
-              },
             ],
             tData: [],
             totalNum: 0,
@@ -85,7 +93,7 @@ export default {
     },
     created() {
         console.log("query/ShareQuery");
-    },
+      },
     methods: {
         handleSubmit(){
           if(this.isFormEmpty()){
@@ -96,7 +104,7 @@ export default {
         //提交到api接口
         core.fetch({
           method: 'get',
-        url: `/api/tquery/fundshare?productName=${this.formItem.productName}&customerName=${this.formItem.customerName}`,
+        url: `/api/tquery/fundshare?productName=${this.formItem.productName}&customerName=${this.formItem.customerName}&customerId=${this.formItem.customerId}`,
           headers: {
             'Content-Type': 'application/json' // 确保服务器知道发送的是JSON数据
           },
@@ -127,13 +135,13 @@ export default {
         },
       pageChange(index) {
         // console.log(index);
-      },
+        },
       numChange(value) {
         console.log(value);
-      },
+        },
       dataChange(i) {
         this.tData = data.slice((i - 1) * 10, i * 10);
-      },
+        },
     },
     beforeDestroy() {
     },
