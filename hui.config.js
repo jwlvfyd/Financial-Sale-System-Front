@@ -17,7 +17,7 @@ module.exports = {
   ],
   // 代理
   proxy: {"/testapi": {
-            target: "http://127.0.0.1:2022",
+            target: "http://127.0.0.1:2022/",
             changeOrigin: true,
             pathRewrite: {
                 "^/testapi": "/api"

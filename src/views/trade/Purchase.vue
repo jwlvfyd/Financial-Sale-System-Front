@@ -48,7 +48,7 @@
           <h-input v-model="formItem.inputProductName" placeholder="请输入产品名称"></h-input>
         </h-form-item>
         <h-form-item>
-          <h-button type="ghost" @click="prouductQuery">查询</h-button>
+          <h-button type="ghost" @click="productQuery">查询</h-button>
         </h-form-item>
       </div>
       <h-form-item label="基金产品">
@@ -80,7 +80,7 @@
       <p>客户姓名:{{this.customerInfo.name}}</p>
       <p>基金Id:{{this.formItem.selectProduct}}</p>
       <p>银行卡号:{{this.formItem.selectAccount}}</p>
-      <p>交易金额:{{this.formItem.inputMoney}}</p>
+      <p>申购金额:{{this.formItem.inputMoney}}</p>
     </h-msg-box>
 
     <h-msg-box
@@ -164,8 +164,8 @@ export default {
         });
         
       },
-      prouductQuery(){
-        console.log("prouductQuery")
+      productQuery(){
+        console.log("productQuery")
         console.log(this.formItem.selectAccount)
         core
         .fetch({
@@ -190,10 +190,7 @@ export default {
         core
         .fetch({
           method: "post",
-          url: `/api/ttrade/subscribe?accountId=${this.formItem.selectAccount}
-          &productId=${this.formItem.selectProduct}
-          &money=${this.formItem.inputMoney}
-          &customerId=${this.customerInfo.customerId}`,
+          url: `/api/ttrade/subscribe?accountId=${this.formItem.selectAccount}&productId=${this.formItem.selectProduct}&money=${this.formItem.inputMoney}&customerId=${this.customerInfo.customerId}`,
         })
         .then((res) => {
             console.log(res)

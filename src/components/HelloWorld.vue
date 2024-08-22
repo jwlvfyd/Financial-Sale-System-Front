@@ -1,8 +1,8 @@
 <template>
   <div class="tc">
     <h1>理财销售交易系统</h1>
-    <p>Group1</p>
-    <h2>相关资源</h2>
+    <h2>Group1</h2>
+    <!-- <h2>相关资源</h2>
     <ul>
       <li>
         <a href="http://hui.hundsun.com/" target="_blank" rel="noopener">官网</a>
@@ -10,7 +10,7 @@
         <a href="http://hui.hundsun.com/community/" target="_blank" rel="noopener">社区</a>
         <a href="https://git01.hundsun.com/HUIOpenSource/hui-pro" target="_blank" rel="noopener">代码示例</a>
       </li>
-    </ul>
+    </ul> -->
   </div>
 </template>
 

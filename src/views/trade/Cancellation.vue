@@ -10,15 +10,19 @@
           <h-button type="ghost" @click="tradeQuery">查询</h-button>
         </h-form-item>
       </div>
-    </h-form>
 
-    <h-form :model="formItem" :label-width="80">
       <h2>交易信息</h2>
       <h-form-item label="今日交易">
-        <h-select v-model="formItem.Account" placeholder="请选择">
-          <h-option value="beijing">北京市</h-option>
-          <h-option value="shanghai">上海市</h-option>
-          <h-option value="shenzhen">深圳市</h-option>
+       <h-select v-model="formItem.swiftNo" placeholder="请选择">
+            <h-option v-for="item in tradeInfo" :key="item.swiftNo" :value="item.swiftNo">
+                交易类型:{{item.tradeType}}
+                交易时间:{{item.timeStamp}}
+                交易账户:{{item.accountId}}
+                银行名称:{{item.accountName}}
+                产品Id:{{item.productId}}
+                产品名称:{{item.productName}}
+                交易份额或金额:{{item.amount}}
+            </h-option>
         </h-select>
       </h-form-item>
       <h-form-item>
@@ -29,13 +33,9 @@
     <h-msg-box
       v-model="showConfirmBox"
       :escClose="true"
-      title="确认交易信息"
+      title="确认撤单？"
       @on-ok="finalSubmit"
     >
-      <p>客户姓名：</p>
-      <p>基金名称：</p>
-      <p>账户信息：</p>
-      <p>交易金额：</p>
     </h-msg-box>
 
     </div>
@@ -49,29 +49,33 @@ export default {
         return {
             formItem: {
                 inputCustomerId:"",
+                swiftNo:"",
             },
             tradeInfo:[],
-            swiftNo:"",
             showConfirmBox:false,
         };
     },
     created() {
-        console.log("trade/Cancellation")
+        // console.log("trade/Cancellation")  
     },
     methods: {
         tradeQuery(){
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = ('0' + (now.getMonth() + 1)).slice(-2);
+            const day = ('0' + now.getDate()).slice(-2);
+            const formattedTime = year + month + day;
+            const startTime = parseInt(formattedTime+"000000");
+            const endTime = parseInt(year + month + day + "235959");
+
             core
             .fetch({
             method: "get",
-            url: "/api/tquery/trade",
-            data:{
-                customerId: this.formItem.inputCustomerId
-            }
+            url: `/api/tquery/trade?customerId=${this.formItem.inputCustomerId}&startTime=${startTime}&endTime=${endTime}`,
             })
             .then((res) => {
                 console.log(res)
-                this.tradeInfo = res.data.data;
-                console.log(this.customerInfo)
+                this.tradeInfo = res.data;
             })
             .catch(() => {
             this.$hMessage.error({
@@ -81,19 +85,13 @@ export default {
             });
             });
         },
-        finalSubmit(){
-            console.log("finalSubmit")          
+        finalSubmit(){          
             core
             .fetch({
             method: "post",
-            url: "/api/ttrade/cancelorder",
-            data:{
-                swiftNo: this.swiftNo
-            }
+            url: `/api/ttrade/cancelorder?swiftNo=${this.formItem.swiftNo}`,
             })
             .then((res) => {
-                console.log(res)
-
                 this.$hMessage.success({
                 content: `撤单成功`,
                 durtion: 3,

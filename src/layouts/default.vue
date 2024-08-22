@@ -9,14 +9,20 @@
 <template>
   <div class="layout">
     <h-row name="flex" style="background-color: #43a7fd;height: 40px;">
-      <h-col span="20">
+      <h-col span="18">
         <h2 style="margin-left: 3%; margin-top: 5px;color:aliceblue">
           理财销售交易系统
         </h2>
       </h-col>
-      <h-col span="4">
+      <h-col span="6">
         <div style="margin-left: 50%; margin-top: 3px;">
-          <h-button type="primary">登录</h-button>
+          <div>
+            <h-button v-if="!islogin" type="primary" @click="islogin=true">登录</h-button>
+          </div>
+          <div style="display: flex; align-items: center;">
+            <h3 v-if="islogin" style="margin-right: 5px;">你好 user10000</h3>
+            <h-button v-if="islogin" type="primary" @click="islogin=false">退出</h-button>
+          </div>
         </div>
       </h-col>
     </h-row>
@@ -115,8 +121,12 @@ import logo from "@/assets/logo.png";
 export default {
   data() {
     return {
-      logo
+      logo,
+      islogin: ture,
     };
+  },
+  method: {
+
   }
 };
 </script>

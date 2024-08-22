@@ -21,10 +21,10 @@
       </div>
       <div style="display: flex; align-items: center;">
         <h-form-item label="联系方式">
-          <h-input v-model="formItem.contactInfo" disabled="disabled"></h-input>
+          <h-input v-model="customerInfo.contactInfo" disabled="disabled"></h-input>
         </h-form-item>
         <h-form-item label="风险等级">
-          <h-input v-model="formItem.riskLevel" disabled="disabled"></h-input>
+          <h-input v-model="customerInfo.riskLevel" disabled="disabled"></h-input>
         </h-form-item>
       </div>
     </h-form>
@@ -36,14 +36,18 @@
           <h-input v-model="formItem.inputProductName" placeholder="请输入产品名称"></h-input>
         </h-form-item>
         <h-form-item>
-          <h-button type="ghost" @click="prouductQuery">查询</h-button>
+          <h-button type="ghost" @click="shareQuery">查询</h-button>
         </h-form-item>
       </div>
-      <h-form-item label="">
-        <h-select v-model="formItem.selectProduct" placeholder="请选择">
-          <h-option value="beijing">北京市</h-option>
-          <h-option value="shanghai">上海市</h-option>
-          <h-option value="shenzhen">深圳市</h-option>
+      <h-form-item label="基金份额">
+        <h-select v-model="formItem.selectShareIndex" placeholder="请选择">
+            <h-option v-for="(item, i) in sharesInfo" :key="i" :value="i">
+            产品Id:{{ item.productId }}
+            产品名称:{{ item.productName }}
+            购入账户:{{ item.accountId }}
+            银行名称:{{ item.accountName }}
+            持有份额:{{ item.share }}
+          </h-option>
         </h-select>
       </h-form-item>
     </h-form>
@@ -65,8 +69,10 @@
       @on-ok="finalSubmit"
     >
       <div>
-        <p>客户姓名: </p>
-        <!-- <p>客户性别: {{customerInfo.gender}}</p> -->
+        <p>客户姓名:{{this.customerInfo.name}}</p>
+        <p>基金Id:{{this.sharesInfo[this.formItem.selectShareIndex].productId}}</p>
+        <p>银行卡号:{{this.sharesInfo[this.formItem.selectShareIndex].accountId}}</p>
+        <p>赎回份额:{{this.formItem.inputMoney}}</p>
       </div>
     </h-msg-box>
     <h-msg-box
@@ -74,13 +80,12 @@
       :escClose="true"
       title="交易成功"
     >
-      <p>流水单号：</p>.
+      <p>流水单号：{{ this.swiftNo }}</p>.
       <p slot="footer">
         <!-- slot内可以放任意自定义内容 -->
         <!-- 点击取消和确定按钮时可实现自己的业务逻辑 -->
-        <h-button type="primary" >继续赎回</h-button>
-        <h-button>返回首页</h-button>
-        <h-button>打印凭证</h-button>
+        <h-button type="primary" @click="showSuccessBox = false" >继续赎回</h-button>
+        <h-button @click="showSuccessBox = false">打印凭证</h-button>
       </p>
     </h-msg-box>
 
@@ -97,15 +102,32 @@ export default {
                 inputCustomerId:"",
                 inputProductName:"",
                 inputShare:"",
+                selectShareIndex:0,
             },
-            customerInfo:{},
-            sharesInfo:[],
+            customerInfo:{
+              customerId:"",
+              name:"",
+              gender:"",
+              contactInfo:"",
+              riskLevel:"",
+              accounts:[]
+            },
+            sharesInfo:[
+                {
+                    productId: "",
+                    productName: "",
+                    accountId: "",
+                    accountName: "",
+                    share: 0,
+                },
+            ],
+            swiftNo:"",
             showConfirmBox:false,
             showSuccessBox:false,
         };
     },
     created() {
-        console.log("trade/Redeem")
+        // console.log("trade/Redeem")
     },
     methods: {
     customerQuery(){
@@ -114,14 +136,11 @@ export default {
         core
         .fetch({
           method: "get",
-          url: "/api/taccount/query",
-          data:{
-            customerId: this.formItem.inputCustomerId
-          }
+          url: `/api/taccount/query?customerId=${this.formItem.inputCustomerId}`,
         })
         .then((res) => {
             console.log(res)
-            this.customerInfo = res.data.data;
+            this.customerInfo = res.data;
             console.log(this.customerInfo)
         })
         .catch(() => {
@@ -132,19 +151,15 @@ export default {
           });
         });
     },
-    ShareQuery() {
+    shareQuery() {
         core
         .fetch({
           method: "get",
-          url: "/api/tquery/fundshare",
-          data:{
-            productName: this.formItem.inputProductName,
-            customerId: this.formItem.inputCustomerId
-          }
+          url: `/api/tquery/fundshare?customerId=${this.formItem.inputCustomerId}&productName=${this.formItem.inputProductName}`,
         })
         .then((res) => {
             console.log(res)
-            this.sharesInfo = res.data.data.shares;
+            this.sharesInfo = res.data;
         })
         .catch(() => {
           this.$hMessage.error({
@@ -159,18 +174,12 @@ export default {
         core
         .fetch({
           method: "post",
-          url: "/api/ttrade/redeem",
-          data:{
-            accountId:"",
-            productId:"",
-            share: this.formItem.inputShare,
-            customerId: this.formItem.inputCustomerId
-          }
+          url: `/api/ttrade/redeem?accountId=${this.sharesInfo[this.formItem.selectShareIndex].accountId}&productId=${this.sharesInfo[this.formItem.selectShareIndex].productId}&share=${this.formItem.inputShare}&customerId=${this.customerInfo.customerId}`,
         })
         .then((res) => {
             console.log(res)
             this.showSuccessBox = true;
-            console.log(res.data.data.swiftNo)
+            this.swiftNo = res.data.swiftNo
         })
         .catch(() => {
           this.showSuccessBox = true;
