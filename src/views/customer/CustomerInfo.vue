@@ -23,7 +23,7 @@
     <h1>客户详情</h1>
     <br/>
     <h2>已添加的银行卡</h2>
-    <h-button class="btn btn-success" @click="showModal = true">添加银行卡</h-button>
+    <h-button class="btn btn-success" :disabled="isDisabled" @click="showModal = true">添加银行卡</h-button>
     <br/>
     <br/>
     <div class="cards-container">
@@ -32,14 +32,14 @@
         <div class="card-body">
           <p><strong>银行卡号:</strong> {{ account.accountId }}</p>
           <p><strong>银行名称:</strong> {{ account.bankName }}</p>
-          <p><strong>账户余额:</strong> ¥{{ account.balance.toFixed(2) }}</p>
+          <p><strong>账户余额:</strong> ¥{{ account.balance}}</p>
           <h-button class="btn btn-info" @click="openRechargeModal(index)">选择充值</h-button>
         </div>
         </div>
       </div>
       <div v-else-if="selectedCustomer">
-      <p>暂无银行卡信息。</p>
-    </div>
+        <p>当前用户暂无银行卡信息。</p>
+      </div>
     </div>
 
      <!-- 添加银行卡弹窗 -->
@@ -93,6 +93,7 @@ import core from "@hsui/core";
   export default {
     data() {
       return {
+        isDisabled: true, // 默认初始状态为禁用
         userLoading:false,
         users:[],
         userColumns: [
@@ -109,25 +110,30 @@ import core from "@hsui/core";
             key: 'gender',
           },
           {
+            title: '风险等级',
+            key: 'riskLevel',
+          },
+          {
             title: '联系方式',
             key: 'contactInfo',
-          },],
+          },
+        ],
         customerId: '',
         bankAccounts: [], // 已添加的银行卡账户列表
         newAccount: { // 新添加的银行卡信息
           accountId: "",
           bankName: "",
-          cardHolder: "",
+          balance: 0,
         },
         selectedCustomer: {
-            customerId:"",
+            customerId:"-1",
             name:"",
             gender:"",
             contactInfo:"",
             riskLevel:null,
         }, // 当前查询的客户信息
         searchQuery: "", //搜索输入
-        selectedAccount: null, // 当前选择充值的银行卡
+        selectedAccount: 0, // 当前选择充值的银行卡
         rechargeAmount: 0, // 充值金额
         isModalOpen: false, // 控制弹窗显示的状态
         showModal: false, // 控制添加银行卡弹窗显示的状态
@@ -153,6 +159,12 @@ import core from "@hsui/core";
         });
     },
     searchCustomer() {
+      if(this.searchQuery===''){
+         // 清空已有的银行卡信息
+        this.bankAccounts = [];
+        this.loadUsers();
+      }
+      else{
         // 调用用户查询接口
         core
         .fetch({
@@ -170,6 +182,7 @@ import core from "@hsui/core";
             this.selectedCustomer.customerId = response.data.customerId;
             this.users=[];
             this.users.push(this.selectedCustomer);
+            this.isDisabled = false;
             // 清空已有的银行卡信息
             this.bankAccounts = [];
             //获取银行卡信息
@@ -181,6 +194,7 @@ import core from "@hsui/core";
         .catch( error => {
           console.error("查询用户失败:", error);
         });
+      }
       },
       addBankAccount() {
         // 调用添加银行卡接口
@@ -197,7 +211,7 @@ import core from "@hsui/core";
                 ...this.newAccount
             });
             this.showModal = false;
-            //alert('银行卡添加成功');
+            this.$hMessage.success('银行卡添加成功');
             // 清空输入表单
             this.newAccount = {
                   accountId: "",
@@ -205,8 +219,9 @@ import core from "@hsui/core";
                   cardHolder: "",
             };
           } 
-          else {alert('无添加银行卡');}
+          else {this.$hMessage.error('无添加银行卡');}
         });
+       
       },
       openRechargeModal(index) {
         // 打开充值弹窗
@@ -273,7 +288,7 @@ import core from "@hsui/core";
   background-color: #f8f9fa;
   border-radius: 10px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-  max-height:250px;
+  max-height:200px;
   overflow-y: auto; /* 当内容超出时显示滚动条 */
 }
 

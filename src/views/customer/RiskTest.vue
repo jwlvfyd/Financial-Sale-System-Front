@@ -4,11 +4,11 @@
     <div class="progress-bar">
       <div class="progress" :style="{ width: progress + '%' }"></div>
     </div>
-    <h-form class ="form" @submit.prevent="submitForm">
+    <h-form class ="form">
       <div class="question-block" v-for="(question, index) in paginatedQuestions" :key="question.id">
         <h-form-item>
           <h4>Q{{ currentPageStartIndex + index + 1 }}: {{ question.question }}</h4>
-          <h-radio-group v-model="answers[question.id]" size="small" vertical>
+          <h-radio-group v-model="answers[question.id-1]" size="small" vertical>
             <h-radio
               v-for="(option, idx) in question.options"
               :key="idx"
@@ -35,6 +35,7 @@
         </h-button>
         <h-button 
           type="submit" 
+          @click="submitForm"
           v-if="currentPage === totalPages">
           提交
         </h-button>
@@ -47,7 +48,6 @@
 </template>
 
 <script>
-import { useStore } from 'vuex';
 import core from "@hsui/core";
 
 export default {
@@ -258,31 +258,36 @@ export default {
         this.currentPage--;
       }
     },
-    async submitForm() {
-      core
-        .fetch({
-          method: "post",
-          url: "/api/taccount/riskassessment", 
-          data:{
-            answers:this.answers
-          }   
-        })
-        .then((response) => {
-          console.log(response);
-          this.riskLevel = response.data.riskLevel;
-          this.riskMessage = response.msg;
-        })
-        .catch((error) => {
-            console.log("风险测评错误：",error);
-        });
-    
-    const store = useStore();
-    const sharedData = computed(() => store.getters.getcustomerId);
+    getResult(sum) {
+    if (sum >= 20 && sum <= 34) {
+      return 1;
+    } else if (sum >= 35 && sum <= 46) {
+      return 2;
+    } else if (sum >= 47 && sum <= 58) {
+      return 3;
+    } else if (sum >= 59 && sum <= 70) {
+      return 4;
+    } else if (sum >= 71 && sum <= 80) {
+      return 5;
+    } else {
+      return "Score out of range";
+    }
+  },
+    submitForm() {
+    console.log(this.answers);
+    const sum = this.answers.reduce((total, answer) => {
+    console.log(answer); // 输出每个 score 的值
+    return total + (typeof answer === 'number' ? answer : 0); // 仅在 score 是数字时累加
+}, 0);
+    const riskLevel = this.getResult(sum);
+    console.log("sum:", sum);
+    console.log("riskLevel:", riskLevel);
+    const sharedData = '123123200001012222';
 
-      core
+    core
         .fetch({
           method: "post",
-          url: `/api/taccount/updaterisk?customerId=${sharedData}&riskLevel=${this.riskLevel}` 
+          url: `/api/taccount/updaterisk?customerId=${sharedData}&riskLevel=${riskLevel}` 
         })
         .then((response) => {
           console.log(response);

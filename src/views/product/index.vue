@@ -155,9 +155,9 @@
         productLoading: true,
         showEditProductModal:false,
         showAddProductModal: false, // 控制弹窗显示
-        searchType: '混合型基金',
-        searchRiskLevel: 1,
-        searchState: '在售',
+        searchType: '',
+        searchRiskLevel: null,
+        searchState: '',
         exactProductId: '',
         productColumns: [
         {
@@ -184,7 +184,7 @@
           title: "操作",
           key: "action",
           width: 200,
-          render(h, { row, row: { id, productName } = {} },showEditProductModal) {
+          render(h, { row, row: { id, productName } = {} }) {
             return h("div", [
               h(
                 "h-poptip",
@@ -224,7 +224,7 @@
                   props: { type: "text", size: "small" },
                   on: {
                     click() {
-                      showEditProductModal = true;
+                      this.showEditProductModal = true;
                     },
                   },
                 },
@@ -313,9 +313,10 @@
       core
         .fetch({
           method: "get",
-          url: `/api/tproduct/select?productType=${query.productType}&?riskLevel=${query.riskLevel}&?productState=${query.productState}`,
+          url: `/api/tproduct/select?productType=${query.productType}&riskLevel=${query.riskLevel}&productState=${query.productState}`,
         })
         .then((res) => {
+          this.$hMessage.success("模糊查询成功");
           this.products = [];
           this.products = res.data;
           console.log(res);
@@ -340,9 +341,15 @@
         })
         .then((res) => {
           console.log(res);
-          this.products = [];
-          this.product = res.data;
-          this.products.push(this.product);
+          if(res.msg==='查询成功'){
+            this.$hMessage.success("查询成功");
+            this.products = [];
+            this.product = res.data;
+            this.products.push(this.product);
+          }
+          else{
+            this.$hMessage.error("该产品不存在");
+          }
         })
         .catch((error) => {
           console.error("精确查询失败:", error);
@@ -353,7 +360,6 @@
     // 确定新增产品操作
     confirmAddProduct() {
       const currentTimestamp = new Date().getTime();
-      //this.product.productId = currentTimestamp.toString();
       console.log("新增产品数据：", this.product);
       // 调用API将数据提交到服务器
       core
