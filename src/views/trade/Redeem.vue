@@ -72,15 +72,16 @@
         <p>客户姓名:{{this.customerInfo.name}}</p>
         <p>基金Id:{{this.sharesInfo[this.formItem.selectShareIndex].productId}}</p>
         <p>银行卡号:{{this.sharesInfo[this.formItem.selectShareIndex].accountId}}</p>
-        <p>赎回份额:{{this.formItem.inputMoney}}</p>
+        <p>赎回份额:{{this.formItem.inputShare}}</p>
       </div>
     </h-msg-box>
     <h-msg-box
       v-model="showSuccessBox"
       :escClose="true"
-      title="交易成功"
+      title="交易结果"
     >
       <p>流水单号：{{ this.swiftNo }}</p>.
+      <p>交易信息：{{ this.returnMsg }}</p>
       <p slot="footer">
         <!-- slot内可以放任意自定义内容 -->
         <!-- 点击取消和确定按钮时可实现自己的业务逻辑 -->
@@ -101,7 +102,7 @@ export default {
             formItem: {
                 inputCustomerId:"",
                 inputProductName:"",
-                inputShare:"",
+                inputShare:0,
                 selectShareIndex:0,
             },
             customerInfo:{
@@ -122,6 +123,7 @@ export default {
                 },
             ],
             swiftNo:"",
+            returnMsg:"",
             showConfirmBox:false,
             showSuccessBox:false,
         };
@@ -159,6 +161,7 @@ export default {
         })
         .then((res) => {
             console.log(res)
+            this.returnMsg = res.msg;
             this.sharesInfo = res.data;
         })
         .catch(() => {

@@ -118,11 +118,11 @@
 
 <script>
 import logo from "@/assets/logo.png";
-export default {
+export default {  
   data() {
     return {
       logo,
-      islogin: ture,
+      islogin: true,
     };
   },
   method: {
