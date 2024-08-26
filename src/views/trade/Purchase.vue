@@ -86,10 +86,10 @@
     <h-msg-box
       v-model="showSuccessBox"
       :escClose="false"
-      title="交易成功"
-
+      title="交易结果"
     >
       <p>流水单号：{{ this.swiftNo }}</p>.
+      <p>交易信息：{{ this.returnMsg }}</p>
       <p slot="footer">
         <!-- slot内可以放任意自定义内容 -->
         <!-- 点击取消和确定按钮时可实现自己的业务逻辑 -->
@@ -136,7 +136,8 @@ export default {
             // 弹框显示变量
             showConfirmBox: false,
             showSuccessBox: false,
-            swiftNo:""
+            swiftNo:"",
+            returnMsg:""
         };
     },
     created() {
@@ -196,6 +197,7 @@ export default {
             console.log(res)
             this.showSuccessBox = true;
             this.swiftNo = res.data.swiftNo
+            this.returnMsg = res.msg
         })
         .catch(() => {
           this.$hMessage.error({
