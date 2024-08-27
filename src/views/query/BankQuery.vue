@@ -132,7 +132,6 @@ export default {
             this.$nextTick(() => {
               // 遍历data中的每个数组元素
               this.data.forEach(item => {
-                // 假设item有一个名为timestamp的属性
                 item.changeTime = this.convertIntegerToDateTime(item.changeTime);
               });
 
@@ -179,7 +178,7 @@ export default {
             console.log(value);
             },
         dataChange(i) {
-            this.tData = data.slice((i - 1) * 10, i * 10);
+            this.tData = this.data.slice((i - 1) * 10, i * 10);
             },
         convertIntegerToDateTime(integer) {
             // 将整数转换为字符串

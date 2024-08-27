@@ -140,7 +140,7 @@ export default {
         console.log(value);
         },
       dataChange(i) {
-        this.tData = data.slice((i - 1) * 10, i * 10);
+        this.tData = this.data.slice((i - 1) * 10, i * 10);
         },
     },
     beforeDestroy() {

@@ -173,14 +173,13 @@ export default {
         .then(result => {
           // 处理响应数据
           this.$hMessage.info(result.msg);
-            this.data=result.data;
             this.$nextTick(() => {
+              this.data=result.data;
               // 遍历data中的每个数组元素
               this.data.forEach(item => {
                 // 假设item有一个名为timestamp的属性
                 item.timestamp = this.convertIntegerToDateTime(item.timestamp);
               });
-
               this.totalNum = this.data.length;
               this.tData = this.data.slice(0, 10);
             });
@@ -218,7 +217,7 @@ export default {
         console.log(value);
       },
       dataChange(i) {
-        this.tData = data.slice((i - 1) * 10, i * 10);
+        this.tData = this.data.slice((i - 1) * 10, i * 10);
       },
       formatDateToYYYYMMDDHHmmss(date) {
         if(date==null)return '';
