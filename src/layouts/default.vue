@@ -42,9 +42,9 @@
             <h-menu-item name="product-1">
               <router-link to="/product">基金产品</router-link>
             </h-menu-item>
-            <h-menu-item name="product-2">
+            <!-- <h-menu-item name="product-2">
               <router-link to="/product-example">基金产品-示例</router-link>
-            </h-menu-item>
+            </h-menu-item> -->
           </h-submenu>
           <h-submenu name="customer">
             <template v-slot:title>
@@ -57,9 +57,9 @@
             <h-menu-item name="customer-2">
               <router-link to="/customer/RiskTest">风险测评</router-link>
             </h-menu-item>
-            <h-menu-item name="customer-3">
+            <!-- <h-menu-item name="customer-3">
               <router-link to="/customer/BankCard">银行卡管理</router-link>
-            </h-menu-item>
+            </h-menu-item> -->
             <h-menu-item name="customer-4">
               <router-link to="/customer/CustomerInfo">客户信息查询</router-link>
             </h-menu-item>

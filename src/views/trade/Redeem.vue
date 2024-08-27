@@ -62,19 +62,23 @@
         <!-- <h-button type="ghost" style="margin-left: 8px;">取消</h-button> -->
       </h-form-item>
     </h-form>
-    <h-msg-box
-      v-model="showConfirmBox"
-      :escClose="true"
-      title="确认交易信息"
-      @on-ok="finalSubmit"
-    >
-      <div>
-        <p>客户姓名:{{this.customerInfo.name}}</p>
-        <p>基金Id:{{this.sharesInfo[this.formItem.selectShareIndex].productId}}</p>
-        <p>银行卡号:{{this.sharesInfo[this.formItem.selectShareIndex].accountId}}</p>
-        <p>赎回份额:{{this.formItem.inputShare}}</p>
-      </div>
-    </h-msg-box>
+
+    <div v-if="showConfirmBox">
+      <h-msg-box
+        v-model="showConfirmBox"
+        :escClose="true"
+        title="确认交易信息"
+        @on-ok="finalSubmit"
+      >
+        <div>
+          <p>客户姓名:{{this.customerInfo.name}}</p>
+          <p>基金Id:{{this.sharesInfo[this.formItem.selectShareIndex].productId}}</p>
+          <p>银行卡号:{{this.sharesInfo[this.formItem.selectShareIndex].accountId}}</p>
+          <p>赎回份额:{{this.formItem.inputShare}}</p>
+        </div>
+      </h-msg-box>
+    </div>
+
     <h-msg-box
       v-model="showSuccessBox"
       :escClose="true"
@@ -113,15 +117,7 @@ export default {
               riskLevel:"",
               accounts:[]
             },
-            sharesInfo:[
-                {
-                    productId: "",
-                    productName: "",
-                    accountId: "",
-                    accountName: "",
-                    share: 0,
-                },
-            ],
+            sharesInfo:[],
             swiftNo:"",
             returnMsg:"",
             showConfirmBox:false,
@@ -183,6 +179,7 @@ export default {
             console.log(res)
             this.showSuccessBox = true;
             this.swiftNo = res.data.swiftNo
+            this.returnMsg = res.msg
         })
         .catch(() => {
           this.showSuccessBox = true;
